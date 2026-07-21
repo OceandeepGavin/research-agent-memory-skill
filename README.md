@@ -1,6 +1,6 @@
 # Research Agent Memory
 
-A structured external memory system for long-running research agents.
+A research-oriented external memory system for AI agents.
 
 ## Overview
 

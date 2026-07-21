@@ -2,9 +2,11 @@
 name: research-agent-memory
 description: >
   Maintain structured external memory for long-running research projects.
-  Reduce context consumption by replacing conversation history with
-  structured project memory files. Use for research, coding, experiments,
-  and multi-session AI-assisted workflows.
+  Use when working on long-term research projects, scientific experiments,
+  software development workflows, paper writing, coding tasks, or any
+  multi-session AI-assisted workflow that requires persistent project knowledge.
+  Helps reduce context consumption by replacing raw conversation history
+  with structured memory files.
 ---
 
 # Research Agent Memory
@@ -24,9 +26,12 @@ Structured memory files are persistent.
 
 # Core Principles
 
+
 ## 1. External Memory Over Conversation History
 
 Do not rely on previous conversation history as the primary source of project knowledge.
+
+Conversation history is temporary.
 
 Important information must be converted into structured memory files.
 
@@ -39,12 +44,36 @@ Use:
 - TASKS.md
 - ENVIRONMENT.md
 - KNOWLEDGE.md
+- MEMORY_INDEX.md
 
 as the source of persistent project information.
 
+
 ---
 
-## 2. Minimize Context Loading
+
+## 2. Memory Index Usage
+
+Use MEMORY_INDEX.md as a navigation layer.
+
+MEMORY_INDEX.md provides pointers to important memory entries.
+
+Do not store detailed information in MEMORY_INDEX.md.
+
+Use it only to locate relevant memory files.
+
+
+When memory files become large:
+
+1. Update MEMORY_INDEX.md
+2. Keep detailed information in original memory files
+3. Use MEMORY_INDEX.md for efficient retrieval
+
+
+---
+
+
+## 3. Minimize Context Loading
 
 Never load all memory files by default.
 
@@ -56,26 +85,34 @@ Before reading any memory file, ask:
 2. Which file contains this information?
 3. Is this information necessary for the current decision?
 
+
 Follow:
 
 references/retrieval_strategy.md
 
+
 ---
 
-## 3. Progressive Context Expansion
+
+## 4. Progressive Context Expansion
 
 Start with minimal context.
 
 Expand only when necessary.
 
+
 Default:
+
 
 Read:
 
+- MEMORY_INDEX.md
 - STATE.md
 - TASKS.md
 
+
 Then expand:
+
 
 Code task:
 

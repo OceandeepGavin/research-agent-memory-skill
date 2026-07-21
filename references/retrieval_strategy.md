@@ -11,17 +11,16 @@ Do not load all memory files by default.
 
 ---
 
+## Default Retrieval:
 
-## Default Retrieval
+Read:
 
-
-For every new task:
-
-
-Always load:
-
+- MEMORY_INDEX.md
 - STATE.md
 - TASKS.md
+
+
+Use MEMORY_INDEX.md to locate additional information when needed.
 
 
 Reason:
