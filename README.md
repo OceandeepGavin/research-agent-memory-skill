@@ -243,7 +243,13 @@ The goal is to preserve information that improves future decisions.
 Install this skill into your agent environment:
 
 ```bash
-npx skills add <repository>
+npx skills add OceandeepGavin/research-agent-memory-skill -g -y
+```
+
+List the skill before installing:
+
+```bash
+npx skills add OceandeepGavin/research-agent-memory-skill --list
 ```
 
 ## Version
@@ -251,7 +257,7 @@ npx skills add <repository>
 Current version:
 
 ```
-v0.1.0
+v0.2.1
 ```
 
 Initial release:
