@@ -39,3 +39,13 @@
 
 
 ### 负责人 (Owner)
+
+
+### 记忆写入责任 (Memory Write Responsibility)
+
+<!-- Main controller by default. Worker may write directly only with explicit user authorization. -->
+
+
+### 子线程交接要求 (Worker Handoff Requirement)
+
+<!-- If delegated, worker should return a Memory Update Candidate before finishing. -->

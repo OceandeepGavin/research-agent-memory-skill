@@ -17,6 +17,11 @@ The core idea:
 
 > Conversation history is temporary. Structured memory is persistent.
 
+For Codex-style delegated work, the skill uses a single-writer memory model:
+the main controlling thread writes shared memory by default, while worker
+threads return compact Memory Update Candidates. A worker thread may write
+memory directly only when the user explicitly asks that thread to do so.
+
 ---
 
 ## Motivation
@@ -97,6 +102,7 @@ The memory system consists of several structured files.
 | `TASKS.md`       | Task planning and progress tracking           |
 | `ENVIRONMENT.md` | Computing environment information             |
 | `KNOWLEDGE.md`   | Reusable technical knowledge                  |
+| `MEMORY_INDEX.md`| Lightweight navigation index for memory files |
 | `SESSION_LOG.md` | Temporary session records                     |
 
 ---
@@ -116,6 +122,7 @@ research-agent-memory/
  │   ├── TASKS.md
  │   ├── ENVIRONMENT.md
  │   ├── KNOWLEDGE.md
+ │   ├── MEMORY_INDEX.md
  │   └── SESSION_LOG.md
 
 ├── references/
@@ -135,6 +142,7 @@ The recommended workflow:
 Before starting a task, the agent should read:
 
 ```
+MEMORY_INDEX.md
 STATE.md
 TASKS.md
 ```
@@ -144,6 +152,9 @@ to understand:
 - current objective
 - active problems
 - pending work
+
+For delegated work, the main controlling thread should pass workers only the
+memory excerpts needed for their task.
 
 ---
 
@@ -185,6 +196,56 @@ Update appropriate memory files:
 - New experiment → `EXPERIMENTS.md`
 - New task → `TASKS.md`
 - New reusable knowledge → `KNOWLEDGE.md`
+
+---
+
+## Multi-Agent and Codex Thread Coordination
+
+When one Codex task coordinates work across other tasks, use this rule:
+
+- The main controlling thread owns direct memory writes by default.
+- Worker threads and subagents return a `Memory Update Candidate`.
+- The main thread merges useful candidate items into structured memory.
+- Worker threads may write memory directly only when the user explicitly asks them to update or record memory.
+
+Memory Update Candidate:
+
+```markdown
+## Memory Update Candidate
+
+### Completed Work
+
+-
+
+### Files or Artifacts Changed
+
+-
+
+### Decisions or Rationale
+
+-
+
+### Reusable Findings
+
+-
+
+### Remaining Tasks or Blockers
+
+-
+
+### Suggested Memory Updates
+
+- SESSION_LOG.md:
+- STATE.md:
+- TASKS.md:
+- DECISIONS.md:
+- EXPERIMENTS.md:
+- KNOWLEDGE.md:
+- MEMORY_INDEX.md:
+```
+
+This prevents concurrent memory edits while still preserving the useful output
+of delegated work.
 
 ---
 
@@ -257,7 +318,7 @@ npx skills add OceandeepGavin/research-agent-memory-skill --list
 Current version:
 
 ```
-v0.2.1
+v0.2.2
 ```
 
 Initial release:

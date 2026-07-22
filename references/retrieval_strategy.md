@@ -30,6 +30,41 @@ These represent current project status.
 
 ---
 
+## Main Thread Coordination
+
+When coordinating delegated work, the main controlling thread should read:
+
+- MEMORY_INDEX.md
+- STATE.md
+- TASKS.md
+
+Then retrieve only the specific files needed to prepare worker context.
+
+The main thread should pass workers compact excerpts or task-specific summaries instead of the full memory set.
+
+
+---
+
+
+## Worker Thread Retrieval
+
+Worker threads should not load all memory files by default.
+
+Use the context supplied by the main thread first.
+
+Read additional memory only when required for the assigned task.
+
+If memory files are needed, prefer:
+
+- TASKS.md for task ownership and expected output
+- STATE.md for current status
+- MEMORY_INDEX.md to locate one specific durable entry
+
+Avoid reading SESSION_LOG.md unless doing a historical investigation.
+
+
+---
+
 
 ## Code Modification Task
 

@@ -1,4 +1,4 @@
-- [ ] # 会话日志 (Session Log)
+# 会话日志 (Session Log)
 
 
   # Session 001
@@ -10,6 +10,10 @@
   日期 (Date):
 
   Agent:
+
+  线程角色 (Thread Role):
+
+  <!-- Main controller / Worker with explicit memory authorization / Main controller merging worker candidate -->
 
   任务 (Task):
 
@@ -57,6 +61,29 @@
 
   
 
+  ## 子线程记忆候选 (Worker Memory Update Candidate)
+
+  <!--
+  For delegated work, paste or summarize the worker's Memory Update Candidate here.
+  Keep only durable information. Do not paste full transcripts or raw logs.
+  -->
+
+  ### Completed Work
+
+  -
+
+  ### Decisions or Rationale
+
+  -
+
+  ### Reusable Findings
+
+  -
+
+  ### Remaining Tasks or Blockers
+
+  -
+
   ## 是否需要整理记忆 (Memory Consolidation)
 
 
@@ -67,3 +94,4 @@
   - [ ] EXPERIMENTS.md
   - [ ] TASKS.md
   - [ ] KNOWLEDGE.md
+  - [ ] MEMORY_INDEX.md

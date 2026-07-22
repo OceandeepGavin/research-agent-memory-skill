@@ -1,12 +1,13 @@
 ---
 name: research-agent-memory
 description: >
-  Maintain structured external memory for long-running research projects.
-  Use when working on long-term research projects, scientific experiments,
-  software development workflows, paper writing, coding tasks, or any
-  multi-session AI-assisted workflow that requires persistent project knowledge.
-  Helps reduce context consumption by replacing raw conversation history
-  with structured memory files.
+  Maintain structured external memory for long-running research projects and
+  multi-agent Codex work. Use whenever the user mentions project memory,
+  persistent context, task handoff, main-thread/subthread coordination,
+  remembering decisions, updating memory, or preserving state across sessions.
+  Also use when a main Codex thread delegates work to other threads or agents
+  and needs completed work, decisions, blockers, or reusable findings captured
+  without reloading raw conversation history.
 ---
 
 # Research Agent Memory
@@ -52,7 +53,37 @@ as the source of persistent project information.
 ---
 
 
-## 2. Memory Index Usage
+## 2. Single Writer Memory Model
+
+For multi-thread or multi-agent work, shared memory files should have one default writer.
+
+The main controlling thread owns direct writes to project memory.
+
+Worker threads, subagents, and delegated Codex tasks should not directly edit shared memory files by default.
+At completion, they should return a Memory Update Candidate to the main controlling thread.
+
+The main controlling thread then decides what to merge into:
+
+- SESSION_LOG.md
+- STATE.md
+- TASKS.md
+- DECISIONS.md
+- EXPERIMENTS.md
+- KNOWLEDGE.md
+- MEMORY_INDEX.md
+
+Exception:
+
+If the user explicitly tells the current thread to update memory, record memory, write memory files, or remember the result, that thread may write memory directly.
+Even then, it must keep entries compact, avoid raw logs, avoid duplicate records, and preserve existing user or agent changes.
+
+This model prevents concurrent workers from overwriting shared state while still allowing user-directed memory updates.
+
+
+---
+
+
+## 3. Memory Index Usage
 
 Use MEMORY_INDEX.md as a navigation layer.
 
@@ -73,7 +104,7 @@ When memory files become large:
 ---
 
 
-## 3. Minimize Context Loading
+## 4. Minimize Context Loading
 
 Never load all memory files by default.
 
@@ -94,7 +125,7 @@ references/retrieval_strategy.md
 ---
 
 
-## 4. Progressive Context Expansion
+## 5. Progressive Context Expansion
 
 Start with minimal context.
 
@@ -135,6 +166,82 @@ Design task:
 Do not inspect the entire repository unless required.
 
 ---
+
+# Multi-Agent Memory Protocol
+
+Use this protocol when a main thread delegates work to subthreads, subagents, or other Codex tasks.
+
+## Main Controlling Thread
+
+The main controlling thread should:
+
+1. Read MEMORY_INDEX.md, STATE.md, and TASKS.md before coordinating work.
+2. Give worker threads only the memory context they need.
+3. Ask workers to return a Memory Update Candidate when their task completes.
+4. Merge useful worker findings into memory files.
+5. Resolve conflicts using the consolidation priority rules.
+
+The main thread should not copy worker output verbatim into memory.
+It should extract durable conclusions, decisions, status changes, blockers, and next actions.
+
+## Worker Thread or Subagent
+
+A worker thread should:
+
+1. Use the minimum memory context supplied by the main thread.
+2. Complete its assigned work.
+3. Return a Memory Update Candidate instead of directly editing shared memory.
+
+Memory Update Candidate format:
+
+```markdown
+## Memory Update Candidate
+
+### Completed Work
+
+-
+
+### Files or Artifacts Changed
+
+-
+
+### Decisions or Rationale
+
+-
+
+### Reusable Findings
+
+-
+
+### Remaining Tasks or Blockers
+
+-
+
+### Suggested Memory Updates
+
+- SESSION_LOG.md:
+- STATE.md:
+- TASKS.md:
+- DECISIONS.md:
+- EXPERIMENTS.md:
+- KNOWLEDGE.md:
+- MEMORY_INDEX.md:
+```
+
+If no memory update is needed, say so explicitly and briefly.
+
+## Direct Worker Writes
+
+A worker thread may directly update memory only when the user explicitly asks that thread to do it.
+
+Examples:
+
+- "Update memory from this thread."
+- "Record this in memory."
+- "Remember these results."
+- "Write the project memory files before you finish."
+
+When directly writing memory, the worker thread must follow references/update_rules.md and avoid broad memory rewrites.
 
 # Memory File Responsibilities
 
