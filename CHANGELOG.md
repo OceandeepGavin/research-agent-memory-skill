@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.3 - 2026-08-12
+
+- Add management/memory two-layer model for projects that use a project-management control plane.
+- Add startup retrieval order for projects with both memory/ and management/.
+- Add durable state change mapping across STATE, TASKS, DECISIONS, EXPERIMENTS, ENVIRONMENT, KNOWLEDGE, and management sync hints.
+- Add Current Override and Current Board template sections to prevent stale historical ACTIVE/BLOCKED entries from overriding current truth.
+- Add evidence-pointer-over-copy and quiet heartbeat guidance.
+- Add eval scenarios for startup order, current board precedence, training verdict updates, user corrections, and quiet heartbeat behavior.
+
 ## v0.2.2 - 2026-07-22
 
 - Add single-writer memory model for multi-thread and multi-agent Codex work.

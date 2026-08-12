@@ -1,0 +1,30 @@
+{
+  "skill_name": "research-agent-memory",
+  "evals": [
+    {
+      "id": "memory-management-startup-order",
+      "prompt": "A project has both memory/ and management/. Start work on the current delegated task without loading the whole repo. Describe which memory and management files you read first and why.",
+      "expected_output": "Reads memory/MEMORY_INDEX.md, memory/STATE.md, and memory/TASKS.md first, prioritizes Current Override/Current Board, then reads only necessary management control files such as PROJECT_TREE, PROJECT_STATUS, and the current TASK_BOARD row."
+    },
+    {
+      "id": "current-board-overrides-historical-active",
+      "prompt": "memory/TASKS.md has several old ACTIVE entries, but the top Current Board names one active task and owner. Decide the current task and explain how to treat the older entries.",
+      "expected_output": "Uses the Current Board as the source of truth, treats older ACTIVE/BLOCKED/TODO entries as historical unless referenced by the override, and avoids resurrecting stale work."
+    },
+    {
+      "id": "training-verdict-durable-update",
+      "prompt": "A training run completed and produced an evaluation PASS verdict plus a report path. Explain the memory updates and any project-management sync hints.",
+      "expected_output": "Updates STATE, TASKS, and EXPERIMENTS with compact verdict, next action, and artifact pointer; avoids copying full logs; prompts PM/main controller to update management/TASK_BOARD and relevant PROJECT_STATUS or PROJECT_TREE entries."
+    },
+    {
+      "id": "user-correction-promoted-to-knowledge",
+      "prompt": "The user corrects a recurring Windows/Git/QA operating rule. Record it for future sessions.",
+      "expected_output": "Promotes the durable correction to KNOWLEDGE or DECISIONS as appropriate, may add a lightweight SESSION_LOG entry, and does not leave the correction only in SESSION_LOG."
+    },
+    {
+      "id": "quiet-heartbeat-no-durable-change",
+      "prompt": "A scheduled heartbeat checks the project and finds no status, verdict, blocker, or task changes.",
+      "expected_output": "Does not update multiple memory files or send a long notification; uses a quiet status such as DONT_NOTIFY when supported."
+    }
+  ]
+}

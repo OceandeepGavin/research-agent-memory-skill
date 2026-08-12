@@ -1,6 +1,43 @@
 # 任务管理 (Task Management)
 
 
+# Current Board
+
+<!--
+This section is the current task source of truth.
+Older ACTIVE, BLOCKED, or TODO entries below are historical unless referenced here.
+Use artifact/report pointers instead of copying full reports.
+-->
+
+## Active
+
+- Task:
+- Owner:
+- Status:
+- Next:
+- Artifact:
+
+
+## Waiting
+
+- Task:
+- Owner:
+- Waiting On:
+- Next:
+- Artifact:
+
+
+## Done Recently
+
+- Task:
+- Owner:
+- Verdict:
+- Artifact:
+
+
+---
+
+
 # 当前任务 (Active Tasks)
 
 

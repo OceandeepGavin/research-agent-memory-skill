@@ -2,12 +2,12 @@
 name: research-agent-memory
 description: >
   Maintain structured external memory for long-running research projects and
-  multi-agent Codex work. Use whenever the user mentions project memory,
-  persistent context, task handoff, main-thread/subthread coordination,
+  multi-agent Codex work. Use when the user mentions project memory,
+  persistent context, durable state, task handoff, main-thread/subthread
+  coordination, management/memory files, project-manager integration,
   remembering decisions, updating memory, or preserving state across sessions.
-  Also use when a main Codex thread delegates work to other threads or agents
-  and needs completed work, decisions, blockers, or reusable findings captured
-  without reloading raw conversation history.
+  Use when a main Codex thread delegates work and completed work, decisions,
+  blockers, verdicts, artifacts, or reusable findings need to be captured.
 ---
 
 # Research Agent Memory
@@ -38,16 +38,18 @@ Important information must be converted into structured memory files.
 
 Use:
 
-- PROJECT.md
-- STATE.md
-- DECISIONS.md
-- EXPERIMENTS.md
-- TASKS.md
-- ENVIRONMENT.md
-- KNOWLEDGE.md
-- MEMORY_INDEX.md
+- memory/PROJECT.md
+- memory/MEMORY_INDEX.md
+- memory/STATE.md
+- memory/TASKS.md
+- memory/DECISIONS.md
+- memory/EXPERIMENTS.md
+- memory/ENVIRONMENT.md
+- memory/KNOWLEDGE.md
 
 as the source of persistent project information.
+
+If a project stores memory files at the project root instead of memory/, use the root files with the same names.
 
 
 ---
@@ -83,7 +85,30 @@ This model prevents concurrent workers from overwriting shared state while still
 ---
 
 
-## 3. Memory Index Usage
+## 3. Memory and Management Layers
+
+Some long-running projects use both:
+
+- memory/ for persistent knowledge and current truth
+- management/ for project control
+
+Treat memory/ as the durable knowledge plane.
+It stores current truth, stable decisions, experiment conclusions, environment facts, reusable knowledge, and lightweight session summaries.
+
+Treat management/ as the project control plane.
+It stores routing, project status, task board, file ownership, agent registry, project configuration, roadmap, gates, and current operating rules.
+
+Do not copy the same information at length into both layers.
+Use management/ for control state and routing.
+Use memory/ for reusable facts and durable truth.
+
+When using a project-manager skill or a PM thread, memory updates that change durable state should also prompt the PM to update the relevant management control file.
+
+
+---
+
+
+## 4. Memory Index Usage
 
 Use MEMORY_INDEX.md as a navigation layer.
 
@@ -104,7 +129,7 @@ When memory files become large:
 ---
 
 
-## 4. Minimize Context Loading
+## 5. Minimize Context Loading
 
 Never load all memory files by default.
 
@@ -125,7 +150,7 @@ references/retrieval_strategy.md
 ---
 
 
-## 5. Progressive Context Expansion
+## 6. Progressive Context Expansion
 
 Start with minimal context.
 
@@ -137,10 +162,23 @@ Default:
 
 Read:
 
-- MEMORY_INDEX.md
-- STATE.md
-- TASKS.md
+- memory/MEMORY_INDEX.md
+- memory/STATE.md
+- memory/TASKS.md
 
+Read the Current Override or Current Board section first when present.
+It supersedes older historical ACTIVE or BLOCKED entries below it.
+
+If management/ also exists, then read the smallest needed management control files:
+
+- management/PROJECT_TREE.md
+- management/PROJECT_STATUS.md
+- the current row or section of management/TASK_BOARD.md
+
+Only read management/AGENT_REGISTRY.md for role boundaries, thread routing, or file ownership.
+Only read management/PROJECT_CONFIG.md for policy, privacy, training permissions, open/release policy, token mode, sync mode, or notification rules.
+
+Do not default to reading every memory file, every management file, or every report.
 
 Then expand:
 
@@ -175,7 +213,7 @@ Use this protocol when a main thread delegates work to subthreads, subagents, or
 
 The main controlling thread should:
 
-1. Read MEMORY_INDEX.md, STATE.md, and TASKS.md before coordinating work.
+1. Read memory/MEMORY_INDEX.md, memory/STATE.md, and memory/TASKS.md before coordinating work.
 2. Give worker threads only the memory context they need.
 3. Ask workers to return a Memory Update Candidate when their task completes.
 4. Merge useful worker findings into memory files.
@@ -242,6 +280,74 @@ Examples:
 - "Write the project memory files before you finish."
 
 When directly writing memory, the worker thread must follow references/update_rules.md and avoid broad memory rewrites.
+
+---
+
+# Durable State Updates
+
+Update memory when durable state changes.
+
+Durable state changes include:
+
+- training launched, completed, failed, or stopped
+- evaluation PASS, FAIL, or verdict
+- owner reassignment, thread takeover, or archived/superseded task
+- blocker appeared or resolved
+- preferred checkpoint, branch, method, architecture, or strategy decision
+- accepted operating rule or user correction
+- watch, heartbeat, notification, token, or sync policy change
+- project claim, method, experiment plan, or release plan changed
+
+Default mapping:
+
+| Change | Primary memory file |
+| --- | --- |
+| Current run status, focus, blocker, next step | memory/STATE.md |
+| Active, waiting, completed tasks and owner | memory/TASKS.md |
+| Stable method, architecture, policy, strategy decision | memory/DECISIONS.md |
+| Experiment config, result, verdict, reusable conclusion | memory/EXPERIMENTS.md |
+| Environment, server class, command, path rule | memory/ENVIRONMENT.md |
+| Repeated pitfalls, code, training, QA, release rules | memory/KNOWLEDGE.md |
+| Lightweight activity summary | memory/SESSION_LOG.md |
+| Navigation pointer for large memory files | memory/MEMORY_INDEX.md |
+
+If management/ is present, also tell the project manager or main controlling thread to update the matching management control file:
+
+- management/TASK_BOARD.md for task state and owner changes
+- management/PROJECT_STATUS.md for current status, blockers, and next operation
+- management/PROJECT_TREE.md for artifact/report routes or branch-level ownership
+- management/AGENT_REGISTRY.md for role, owner, or thread routing changes
+- management/PROJECT_CONFIG.md for policy, privacy, permission, notification, or sync-mode changes
+
+## Evidence Pointer Over Copy
+
+Memory should store conclusions plus evidence pointers.
+
+For runs, evaluations, reports, and artifacts, record:
+
+- artifact or report path
+- checkpoint, run, evaluation, or branch identifier when relevant
+- verdict and necessary key metrics
+- next action
+
+Do not paste full logs, full reports, full thread histories, or raw terminal output.
+
+A thread final answer is not durable memory by itself.
+Important results should have a report or artifact path, then durable conclusions should be promoted to the relevant memory file.
+
+## Routine Update Summary
+
+Use this compact format for routine memory updates:
+
+```markdown
+STATE:
+DECISION or VERDICT:
+NEXT:
+ARTIFACT:
+```
+
+If a heartbeat, monitor, or automatic check finds no durable state change, do not update multiple memory files and do not send a long notification.
+Use a quiet status such as DONT_NOTIFY when the surrounding system supports it.
 
 # Memory File Responsibilities
 

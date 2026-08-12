@@ -15,9 +15,9 @@ Do not load all memory files by default.
 
 Read:
 
-- MEMORY_INDEX.md
-- STATE.md
-- TASKS.md
+- memory/MEMORY_INDEX.md
+- memory/STATE.md
+- memory/TASKS.md
 
 
 Use MEMORY_INDEX.md to locate additional information when needed.
@@ -27,6 +27,39 @@ Reason:
 
 These represent current project status.
 
+If files are stored at the project root instead of memory/, use MEMORY_INDEX.md, STATE.md, and TASKS.md at the root.
+
+When STATE.md or TASKS.md has a Current Override or Current Board section, read it first.
+Treat older ACTIVE, BLOCKED, or TODO entries below that section as historical unless the override points to them.
+
+
+---
+
+## Memory and Management Layers
+
+If both memory/ and management/ exist, read memory first, then the smallest necessary management control files.
+
+Startup order:
+
+1. memory/MEMORY_INDEX.md
+2. memory/STATE.md
+3. memory/TASKS.md
+4. management/PROJECT_TREE.md when route or artifact location is needed
+5. management/PROJECT_STATUS.md when current control status is needed
+6. the current row or section of management/TASK_BOARD.md when task board state is needed
+
+Conditional management reads:
+
+- Read management/AGENT_REGISTRY.md only for role boundaries, thread routing, or file ownership.
+- Read management/PROJECT_CONFIG.md only for policy, privacy, training permissions, open or release policy, token mode, sync mode, or notification rules.
+
+Avoid:
+
+- all memory files by default
+- all management files by default
+- all reports by default
+- long thread histories as context
+
 
 ---
 
@@ -34,9 +67,9 @@ These represent current project status.
 
 When coordinating delegated work, the main controlling thread should read:
 
-- MEMORY_INDEX.md
-- STATE.md
-- TASKS.md
+- memory/MEMORY_INDEX.md
+- memory/STATE.md
+- memory/TASKS.md
 
 Then retrieve only the specific files needed to prepare worker context.
 
@@ -56,9 +89,9 @@ Read additional memory only when required for the assigned task.
 
 If memory files are needed, prefer:
 
-- TASKS.md for task ownership and expected output
-- STATE.md for current status
-- MEMORY_INDEX.md to locate one specific durable entry
+- memory/TASKS.md for task ownership and expected output
+- memory/STATE.md for current status
+- memory/MEMORY_INDEX.md to locate one specific durable entry
 
 Avoid reading SESSION_LOG.md unless doing a historical investigation.
 

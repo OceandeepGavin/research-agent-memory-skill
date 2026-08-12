@@ -1,6 +1,35 @@
 # Current State
 
 
+## Current Override
+
+<!--
+This section is the current source of truth.
+Older ACTIVE, BLOCKED, or TODO entries below are historical unless referenced here.
+Keep this section compact and update it when durable state changes.
+-->
+
+### Current PM / Owner
+
+
+### Current Focus
+
+
+### Running / Waiting
+
+
+### Active Blockers
+
+
+### Next Action
+
+
+### Latest Artifact / Evidence Pointer
+
+
+---
+
+
 ## Current Objective
 
 当前正在解决什么

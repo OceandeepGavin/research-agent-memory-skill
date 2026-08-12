@@ -22,6 +22,13 @@ the main controlling thread writes shared memory by default, while worker
 threads return compact Memory Update Candidates. A worker thread may write
 memory directly only when the user explicitly asks that thread to do so.
 
+For projects that also use a project-management layer, keep two planes:
+
+- `management/` is the control plane for routing, project status, task boards, ownership, gates, and operating rules.
+- `memory/` is the durable knowledge plane for current truth, stable decisions, experiment conclusions, environment facts, reusable knowledge, and lightweight session summaries.
+
+Do not copy the same information at length into both planes.
+
 ---
 
 ## Motivation
@@ -130,6 +137,9 @@ research-agent-memory/
  │   ├── update_rules.md
  │   └── retrieval_strategy.md
 
+├── evals/
+ │   └── evals.json
+
 └── README.md
 ```
 
@@ -142,9 +152,9 @@ The recommended workflow:
 Before starting a task, the agent should read:
 
 ```
-MEMORY_INDEX.md
-STATE.md
-TASKS.md
+memory/MEMORY_INDEX.md
+memory/STATE.md
+memory/TASKS.md
 ```
 
 to understand:
@@ -152,6 +162,17 @@ to understand:
 - current objective
 - active problems
 - pending work
+
+Read the Current Override or Current Board section first when present.
+
+If the project also has `management/`, then read only the smallest needed control files, usually:
+
+- `management/PROJECT_TREE.md`
+- `management/PROJECT_STATUS.md`
+- the current task row or section in `management/TASK_BOARD.md`
+
+Read `management/AGENT_REGISTRY.md` only for role boundaries, thread routing, or file ownership.
+Read `management/PROJECT_CONFIG.md` only for policy, privacy, training permission, open/release policy, token mode, sync mode, or notification rules.
 
 For delegated work, the main controlling thread should pass workers only the
 memory excerpts needed for their task.
@@ -196,6 +217,42 @@ Update appropriate memory files:
 - New experiment → `EXPERIMENTS.md`
 - New task → `TASKS.md`
 - New reusable knowledge → `KNOWLEDGE.md`
+
+Durable state changes include training launch/completion/failure, evaluation verdicts, owner reassignment, blockers, preferred checkpoint/branch/method decisions, accepted user corrections, watch/notification policy changes, and project claim or experiment plan changes.
+
+Prefer conclusions plus artifact/report paths over copied logs or full reports.
+
+---
+
+## Durable State Mapping
+
+| Change | Primary memory file |
+| --- | --- |
+| Current run status, focus, blocker, next step | `memory/STATE.md` |
+| Active, waiting, completed tasks and owner | `memory/TASKS.md` |
+| Stable method, architecture, policy, strategy decision | `memory/DECISIONS.md` |
+| Experiment config, result, verdict, reusable conclusion | `memory/EXPERIMENTS.md` |
+| Environment, server class, command, path rule | `memory/ENVIRONMENT.md` |
+| Repeated pitfalls, code, training, QA, release rules | `memory/KNOWLEDGE.md` |
+
+When `management/` is present, prompt the PM or main controlling thread to sync:
+
+- `management/TASK_BOARD.md` for task state and owner changes
+- `management/PROJECT_STATUS.md` for current status and blockers
+- `management/PROJECT_TREE.md` for artifact/report routes
+- `management/AGENT_REGISTRY.md` for role or ownership changes
+- `management/PROJECT_CONFIG.md` for policy, privacy, notification, token, or sync rules
+
+Routine update summary:
+
+```markdown
+STATE:
+DECISION or VERDICT:
+NEXT:
+ARTIFACT:
+```
+
+Heartbeat checks with no durable state change should stay quiet and avoid broad memory writes.
 
 ---
 
@@ -318,7 +375,7 @@ npx skills add OceandeepGavin/research-agent-memory-skill --list
 Current version:
 
 ```
-v0.2.2
+v0.2.3
 ```
 
 Initial release:
